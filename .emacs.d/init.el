@@ -12,10 +12,39 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
-;; lsp mode 
-;;(use-package lsp-mode
-;;  :ensure t
-;;  :hook (prog-mode . lsp))
+;; lsp-mode 
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (XXX-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+;; if you are helm user
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; optionally if you want to use debugger
+(use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+;; optional if you want which-key integration
+(use-package which-key
+    :config
+    (which-key-mode))
+
+;; lsp-java
+(require 'lsp-java)
+(add-hook 'java-mode-hook #'lsp)
+
+(setq lsp-print-performacs t)
 
 ;;(use-package lsp-mode
   ;;:commands (lsp lsp-deferred)
@@ -29,22 +58,9 @@
   ;;(lsp-session-file (expand-file-name (format "%s/emacs/lsp-session-v1"  xdg-data)))
   ;;(read-process-output-max (* 1024 1024)))
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode))
-
-(use-package consult-lsp
-  :commands (consult-lsp-diagnostics consult-lsp-symbols))
-
-(use-package dap-mode
-  :after lsp-mode
-  :config
-  (dap-mode t)
-  (dap-ui-mode t))
-;; languages
-;; c++ 
 
 ;; clangd
-;; (require 'eglot)
+;;(require 'eglot)
 ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
 ;; (add-hook 'c-mode-hook 'eglot-ensure)
 ;; (add-hook 'c++-mode-hook 'eglot-ensure)
@@ -290,6 +306,12 @@
   (local-set-key (kbd "RET") 'newline-and-indent))
 (add-hook 'c++-mode-hook 'set-newline-and-indent)
 
+;; java indentation
+(add-hook 'java-mode-hook (lambda ()
+                                (setq c-basic-offset 4
+                                      tab-width 4
+                                      indent-tabs-mode t)))
+
 ;; disabling gnu indentation style
 (setq c-default-style "linux"
           c-basic-offset 4)
@@ -401,6 +423,9 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+;; yasnippets
+(use-package yasnippet
+ :ensure t)
 
 ;; -*- mode: elisp -*-
 
@@ -424,7 +449,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (eglot doom-modeline company ccls vertico smart-mode-line-powerline-theme powerline smart-mode-line nordless-theme ## all-the-icons neotree treemacs-persp treemacs-magit treemacs-icons-dired treemacs-projectile treemacs-evil treemacs company-lsp which-key use-package lsp-ui evil))))
+    (lsp-javacomp eglot doom-modeline company ccls vertico smart-mode-line-powerline-theme powerline smart-mode-line nordless-theme ## all-the-icons neotree treemacs-persp treemacs-magit treemacs-icons-dired treemacs-projectile treemacs-evil treemacs company-lsp which-key use-package lsp-ui evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
